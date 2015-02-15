@@ -16,46 +16,36 @@ from pyflare import PyflareClient
 import subprocess
 import sys
 
-def current_IP():
-    try:
-        ip = subprocess.check_output(["dig +short myip.opendns.com @resolver1.opendns.com"], shell=True).strip().decode()
-    except Exception as e:
-        print("Failed to get IP.", e)
-        sys.exit(1)
-    return ip
+# get the old IP address
+dns_name = "%s.%s" % (CF_REC_NAME, CF_ZONE)
+try:
+    old_ip = subprocess.check_output(["dig +short %s" % dns_name], shell=True).strip().decode()
+except Exception as e:
+    print("Failed to get old IP.", e)
+    sys.exit(1)
 
-def update_route53():
-    cf = PyflareClient(CF_EMAIL, CF_API_KEY)
-    rec_id = None
+# get the new IP address
+try:
+    current_ip = subprocess.check_output(["dig +short myip.opendns.com @resolver1.opendns.com"], shell=True).strip().decode()
+except Exception as e:
+    print("Failed to get IP.", e)
+    sys.exit(1)
 
-    for rec in cf.rec_load_all(CF_ZONE):
-        if rec['display_name'] == CF_REC_NAME and rec['type'] == 'A':
-            rec_id = rec['rec_id']
-            break
+# check that they're different
+if old_ip == current_ip:
+    sys.exit(0)
 
-    if rec_id is None:
-        print("Couldn't find the record.")
-        sys.exit(2)
+# the IP has changed, so let's update the record
+cf = PyflareClient(CF_EMAIL, CF_API_KEY)
+rec_id = None
 
-    current_ip = current_IP()
+for rec in cf.rec_load_all(CF_ZONE):
+    if rec['display_name'] == CF_REC_NAME and rec['type'] == 'A':
+        rec_id = rec['rec_id']
+        break
 
-    cf.rec_edit(CF_ZONE, 'A', int(rec_id), CF_REC_NAME, current_ip)
+if rec_id is None:
+    print("Couldn't find the record.")
+    sys.exit(2)
 
-    with open("/tmp/last_ip_address", 'w') as last_ip:
-        last_ip.write(current_ip)
-
-
-def ip_changed():
-    try:
-        with open("/tmp/last_ip_address", 'r') as last_ip:
-            ip = last_ip.read()
-    except FileNotFoundError:
-        return True
-    else:
-        if ip == current_IP():
-            return False
-    return True
-
-if __name__ == "__main__":
-    if ip_changed():
-        update_route53()
+cf.rec_edit(CF_ZONE, 'A', int(rec_id), CF_REC_NAME, current_ip)
