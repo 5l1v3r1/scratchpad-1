@@ -1,5 +1,4 @@
 use std::net::{TcpListener, TcpStream};
-use std::io::ErrorKind;
 use std::thread::Thread;
 
 // traits
