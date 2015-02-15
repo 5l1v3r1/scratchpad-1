@@ -7,7 +7,7 @@
 # this stuff is worth it, you can buy me a beer in return. <andrei@avacriu.me>
 # ----------------------------------------------------------------------------
 
-# This is a script for updating an A record on Amazon's Route53.
+# This is a script for updating an A record on CloudFlare's DNS
 # It's intended to be run as a cron job.
 
 from script_config import CF_EMAIL, CF_API_KEY, CF_REC_NAME, CF_ZONE
