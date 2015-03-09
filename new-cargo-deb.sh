@@ -1,3 +1,5 @@
+#!/bin/bash
+
 temp=$(tempfile)d
 mkdir -p $temp
 cd $temp
