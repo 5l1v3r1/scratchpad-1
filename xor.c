@@ -20,12 +20,9 @@ int main(int argc, char *argv[]) {
 
     int64_t counter = 0;
 
-    while (true) {
-        int next_char = fgetc(infile);
-        if (next_char == EOF) {
-            break;
-        }
+    int next_char;
 
+    while ((next_char = fgetc(infile)) != EOF) {
         fputc(next_char ^ (key[counter % key_len]), outfile);
     }
 
