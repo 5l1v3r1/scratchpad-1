@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include <stdbool.h>
@@ -20,10 +21,16 @@ int main(int argc, char *argv[]) {
 
     int64_t counter = 0;
 
-    int next_char;
+    char *next_chars = malloc(key_len);
+    char *next_chars_write = malloc(key_len);
 
-    while ((next_char = fgetc(infile)) != EOF) {
-        fputc(next_char ^ (key[counter % key_len]), outfile);
+    size_t num_chars;
+    while (num_chars = fread(next_chars, 1, key_len, infile)) {
+        for (size_t i = 0; i < num_chars; i++) {
+            next_chars_write[i] = next_chars[i] ^ key[i];
+        }
+
+        fwrite(next_chars_write, 1, num_chars, outfile);
     }
 
     fclose(infile);
