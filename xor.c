@@ -33,6 +33,9 @@ int main(int argc, char *argv[]) {
         fwrite(next_chars_write, 1, num_chars, outfile);
     }
 
+    free(next_chars);
+    free(next_chars_write);
+
     fclose(infile);
     fclose(outfile);
 }
