@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Random Name Generator</title>
+  </head>
+
+  <style>
+    body {
+      height: 80px;
+      width: 300px;
+      text-align: center;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-left: -150px;
+      margin-top: -40px;
+    }
+    #output {
+      display: block;
+      text-align: center;
+    }
+    button {
+      margin-top: 20px;
+    }
+  </style>
+
+  <body>
+    <span id="output"></span>
+    <button id="randomize">Gimme another one</button>
+
+    <script>
+      var nouns;
+      var adjectives;
+
+      window.onload = function() {
+        function randElem(array) {
+          return array[Math.floor(Math.random() * array.length)];
+        }
+
+        var req = new XMLHttpRequest();
+        req.open("GET", "/adj-noun.json", false);
+        req.send(null);
+
+        var data = JSON.parse(req.responseText);
+
+        nouns = data['nouns'];
+        adjectives = data['adjectives'];
+
+        var randomizeBtn = document.getElementById("randomize");
+        var outputSpan = document.getElementById("output");
+
+        randomizeBtn.addEventListener("click",
+            function() {
+              var output = ["the", randElem(adjectives), randElem(nouns)];
+              outputSpan.textContent = output.join(" ");
+            }
+        )
+      }
+    </script>
+  </body>
+</html>
