@@ -57,3 +57,6 @@ script_config.py
 venv/
 
 .ropeproject/
+
+*.swp
+a.out
