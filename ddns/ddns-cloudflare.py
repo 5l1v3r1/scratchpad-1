@@ -27,8 +27,13 @@ except Exception as e:
 
 # get the new IP address
 try:
-    current_ip4 = subprocess.check_output(["dig +short myip.opendns.com @resolver1.opendns.com"], shell=True).strip().decode()
-    current_ip6 = subprocess.check_output(["curl -6 utils.80x24.ca/my_ip"], shell=True).strip().decode()
+    current_ip4 = (subprocess.check_output(["dig +short myip.opendns.com @resolver1.opendns.com"], shell=True)
+                   .strip()
+                   .decode())
+    current_ip6 = (subprocess.check_output(["ip -o -6 address show dev ens5 scope global | awk '{ print $4 }' | cut -d/ -f1"],
+                                           shell=True)
+                   .strip()
+                   .decode())
 except Exception as e:
     print("Failed to get IP.", e)
     sys.exit(1)
